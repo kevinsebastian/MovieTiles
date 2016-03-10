@@ -9,12 +9,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.android.movietiles.model.MovieInfo;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DiscoveryFragment extends Fragment {
 
@@ -49,7 +57,25 @@ public class DiscoveryFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.v("JSON RESPONSE", sendGetMoviesRequest());
+            List<MovieInfo> movieInfoList = new ArrayList<MovieInfo>();
+
+            String jsonResponse = sendGetMoviesRequest();
+            if (jsonResponse == null) {
+                Log.i(LOG_TAG, "No JSON response received from the API call");
+                return null;
+            }
+
+            try {
+                movieInfoList = getMoviesInfoFromJson(jsonResponse);
+            } catch (JSONException jsonE) {
+                Log.e(LOG_TAG, jsonE.getMessage(), jsonE);
+            }
+
+            //For testing
+            for (MovieInfo movieInfo : movieInfoList) {
+                Log.v("MOVIE_IMAGE", movieInfo.getImageLink());
+            }
+
             return null;
         }
 
@@ -120,6 +146,27 @@ public class DiscoveryFragment extends Fragment {
                 }
             }
             return jsonStr;
+        }
+
+        public List<MovieInfo> getMoviesInfoFromJson(String jsonString) throws JSONException {
+            List<MovieInfo> movieInfoList = new ArrayList<>();
+
+            // Get the list of movies from the JSON string
+            JSONArray moviesInfoJSON = new JSONObject(jsonString).getJSONArray("results");
+            for (int i = 0; i < moviesInfoJSON.length(); i++) {
+                JSONObject movieInfoJSON = moviesInfoJSON.getJSONObject(i);
+
+                // Build a MovieInfo object for each movie info
+                MovieInfo movieInfo = new MovieInfo();
+                movieInfo.setTitle(movieInfoJSON.getString("original_title"));
+                movieInfo.setImageLink(movieInfoJSON.getString("poster_path"));
+                movieInfo.setSynopsis(movieInfoJSON.getString("overview"));
+                movieInfo.setRating(movieInfoJSON.getString("vote_average"));
+                movieInfo.setReleaseDate(movieInfoJSON.getString("release_date"));
+                movieInfoList.add(movieInfo);
+            }
+
+            return movieInfoList;
         }
     }
 }
