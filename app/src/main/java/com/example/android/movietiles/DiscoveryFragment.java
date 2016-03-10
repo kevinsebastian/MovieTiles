@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 
 import com.example.android.movietiles.model.MovieInfo;
 
@@ -26,6 +27,8 @@ import java.util.List;
 
 public class DiscoveryFragment extends Fragment {
 
+    private ImageAdapter imageAdapter;
+
     public DiscoveryFragment() {
         // Required empty public constructor
     }
@@ -40,24 +43,29 @@ public class DiscoveryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_discovery, container, false);
+
+        imageAdapter = new ImageAdapter(rootView.getContext());
+
+        // Create the GridView and retrieve the movies info
+        GridView gridview = (GridView) rootView.findViewById(R.id.poster_grid);
+        gridview.setAdapter(imageAdapter);
+        updateMovieInfo();
+
         return rootView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
+    private void updateMovieInfo() {
         FetchMovieTask task = new FetchMovieTask();
         task.execute();
     }
 
-    public class FetchMovieTask extends AsyncTask<Void, Void, Void> {
+    public class FetchMovieTask extends AsyncTask<Void, Void, List<MovieInfo>> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(Void... params) {
-            List<MovieInfo> movieInfoList = new ArrayList<MovieInfo>();
+        protected List<MovieInfo> doInBackground(Void... params) {
+            List<MovieInfo> movieInfoList = new ArrayList<>();
 
             String jsonResponse = sendGetMoviesRequest();
             if (jsonResponse == null) {
@@ -70,13 +78,22 @@ public class DiscoveryFragment extends Fragment {
             } catch (JSONException jsonE) {
                 Log.e(LOG_TAG, jsonE.getMessage(), jsonE);
             }
+            return movieInfoList;
+        }
 
-            //For testing
-            for (MovieInfo movieInfo : movieInfoList) {
-                Log.v("MOVIE_IMAGE", movieInfo.getImageLink());
+        @Override
+        protected void onPostExecute(List<MovieInfo> result) {
+            if (result != null) {
+                // Create an array of the movie image URLs
+                List<String> movieImageURLList = new ArrayList<>();
+                for (MovieInfo movieInfo : result) {
+                    movieImageURLList.add(movieInfo.getImageLink());
+                }
+                String[] movieURLs = movieImageURLList.toArray(new String[movieImageURLList.size()]);
+
+                // Set the new adapter data
+                imageAdapter.setImages(movieURLs);
             }
-
-            return null;
         }
 
         private String sendGetMoviesRequest() {
@@ -165,7 +182,6 @@ public class DiscoveryFragment extends Fragment {
                 movieInfo.setReleaseDate(movieInfoJSON.getString("release_date"));
                 movieInfoList.add(movieInfo);
             }
-
             return movieInfoList;
         }
     }

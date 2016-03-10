@@ -7,4 +7,13 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.movietiles.DiscoveryFragment">
 
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/poster_grid"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        />
+
 </FrameLayout>
