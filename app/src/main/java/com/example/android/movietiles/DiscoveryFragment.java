@@ -1,5 +1,6 @@
 package com.example.android.movietiles;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.android.movietiles.model.MovieInfo;
@@ -42,7 +44,7 @@ public class DiscoveryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_discovery, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_discovery, container, false);
 
         imageAdapter = new ImageAdapter(rootView.getContext());
 
@@ -50,7 +52,13 @@ public class DiscoveryFragment extends Fragment {
         GridView gridview = (GridView) rootView.findViewById(R.id.poster_grid);
         gridview.setAdapter(imageAdapter);
         updateMovieInfo();
-
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(rootView.getContext(), DetailActivity.class);
+                startActivity(intent);
+            }
+        });
         return rootView;
     }
 
@@ -90,9 +98,10 @@ public class DiscoveryFragment extends Fragment {
                     movieImageURLList.add(movieInfo.getImageLink());
                 }
                 String[] movieURLs = movieImageURLList.toArray(new String[movieImageURLList.size()]);
+                MovieInfo[] movieInfos = result.toArray(new MovieInfo[result.size()]);
 
                 // Set the new adapter data
-                imageAdapter.setImages(movieURLs);
+                imageAdapter.setMoviesInfo(movieInfos);
             }
         }
 

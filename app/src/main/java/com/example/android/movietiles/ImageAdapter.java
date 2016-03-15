@@ -6,21 +6,22 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.example.android.movietiles.model.MovieInfo;
 import com.squareup.picasso.Picasso;
 
 public class ImageAdapter extends BaseAdapter {
 
     private Context mContext;
 
-    private String[] mThumbIds = new String[0];
+    private MovieInfo[] mThumbIds = new MovieInfo[0];
 
     // Constructor
     public ImageAdapter(Context c) {
         mContext = c;
     }
 
-    public void setImages(String[] imageURLs) {
-        mThumbIds = imageURLs;
+    public void setMoviesInfo(MovieInfo[] movieInfos) {
+        mThumbIds = movieInfos;
         notifyDataSetChanged();
     }
 
@@ -51,7 +52,9 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-        Picasso.with(mContext).load(mThumbIds[position]).into(imageView);
+
+        String imageLink = mThumbIds[position].getImageLink();
+        Picasso.with(mContext).load(imageLink).into(imageView);
         return imageView;
     }
 }
