@@ -56,6 +56,7 @@ public class DiscoveryFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(rootView.getContext(), DetailActivity.class);
+                intent.putExtra("MOVIE_INFO", (MovieInfo) imageAdapter.getItem(position));
                 startActivity(intent);
             }
         });
