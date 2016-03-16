@@ -1,9 +1,11 @@
 package com.example.android.movietiles;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,18 +67,24 @@ public class DiscoveryFragment extends Fragment {
 
     private void updateMovieInfo() {
         FetchMovieTask task = new FetchMovieTask();
-        task.execute();
+
+        // Get the Sort Order preference
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        final String SORT_BY = prefs.getString(getString(R.string.pref_sort_order_key),
+                getString(R.string.pref_sort_order_default_value));
+        
+        task.execute(SORT_BY);
     }
 
-    public class FetchMovieTask extends AsyncTask<Void, Void, List<MovieInfo>> {
+    public class FetchMovieTask extends AsyncTask<String, Void, List<MovieInfo>> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         @Override
-        protected List<MovieInfo> doInBackground(Void... params) {
+        protected List<MovieInfo> doInBackground(String... params) {
             List<MovieInfo> movieInfoList = new ArrayList<>();
 
-            String jsonResponse = sendGetMoviesRequest();
+            String jsonResponse = sendGetMoviesRequest(params[0]);
             if (jsonResponse == null) {
                 Log.i(LOG_TAG, "No JSON response received from the API call");
                 return null;
@@ -106,7 +114,7 @@ public class DiscoveryFragment extends Fragment {
             }
         }
 
-        private String sendGetMoviesRequest() {
+        private String sendGetMoviesRequest(final String SORT_ORDER) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -117,14 +125,13 @@ public class DiscoveryFragment extends Fragment {
 
             // URL parameters
             String API_KEY = getString(R.string.api_key);
-            String SORT_BY = "popularity.desc";
 
             try {
                 // Build the URL
-                Uri uri = Uri.parse("http://api.themoviedb.org/3/discover/movie")
+                Uri uri = Uri.parse("http://api.themoviedb.org/3/movie")
                         .buildUpon()
+                        .appendPath(SORT_ORDER)
                         .appendQueryParameter("api_key", API_KEY)
-                        .appendQueryParameter("sort_by", SORT_BY)
                         .build();
                 URL url = new URL(uri.toString());
 

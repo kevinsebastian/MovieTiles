@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Sort Order preference values -->
+    <string-array name="pref_sort_order_options">
+        <item>@string/pref_sort_order_popularity_label</item>
+        <item>@string/pref_sort_order_top_rated_label</item>
+    </string-array>
+
+    <string-array name="pref_sort_order_values">
+        <item>@string/pref_sort_order_popularity_value</item>
+        <item>@string/pref_sort_order_top_rated_value</item>
+    </string-array>
+
+</resources>

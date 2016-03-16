@@ -1,6 +1,21 @@
 <resources>
     <string name="app_name">Movie Tiles</string>
 
+    <!-- Activity titles -->
+    <string name="title_activity_settings">Settings</string>
+
     <!-- ActionBar labels-->
     <string name="action_settings">Settings</string>
+
+    <!-- Sort Order preference values -->
+    <string name="pref_sort_order_label" translatable="false">Sort Order</string>
+    <string name="pref_sort_order_key" translatable="false">SORT_ORDER</string>
+    <string name="pref_sort_order_default_value" translatable="false">popular</string>
+
+    <string name="pref_sort_order_popularity_label" translatable="false">Popularity</string>
+    <string name="pref_sort_order_popularity_value" translatable="false">popular</string>
+
+    <string name="pref_sort_order_top_rated_label" translatable="false">Top Rated</string>
+    <string name="pref_sort_order_top_rated_value" translatable="false">top_rated</string>
+
 </resources>
